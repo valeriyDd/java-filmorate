@@ -57,7 +57,7 @@ public class UserControllerTests extends UserController {
     }
 
     @Test
-    public void shouldCreateUserWithoutName () {
+    public void shouldCreateUserWithoutName() {
         User user = User.builder()
                 .email("user@gmail.com")
                 .login("user")
@@ -65,7 +65,7 @@ public class UserControllerTests extends UserController {
                 .birthday(LocalDate.of(1956, 7, 9))
                 .build();
         userController.createUser(user);
-        assertEquals(1, userController.getListUsers().size(),"Неверное количество пользователей");
+        assertEquals(1, userController.getListUsers().size(), "Неверное количество пользователей");
         assertEquals(userController.getUsers().get(1).getName(), user.getLogin(), "Имя и логин не совпадают");
     }
 

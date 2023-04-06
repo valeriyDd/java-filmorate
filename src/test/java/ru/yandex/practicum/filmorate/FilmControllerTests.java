@@ -15,13 +15,13 @@ public class FilmControllerTests extends FilmController {
     Film film1 = Film.builder()
             .name("The Green Mile")
             .description("description")
-            .releaseDate(LocalDate.of(1999,12,6))
+            .releaseDate(LocalDate.of(1999, 12, 6))
             .duration(189)
             .build();
     Film film2 = Film.builder()
             .name("Schindler's List")
             .description("description")
-            .releaseDate(LocalDate.of(1993,11,30))
+            .releaseDate(LocalDate.of(1993, 11, 30))
             .duration(195)
             .build();
 
@@ -42,7 +42,7 @@ public class FilmControllerTests extends FilmController {
         Film film = Film.builder()
                 .name("The Green Mile")
                 .description("description")
-                .releaseDate(LocalDate.of(1700,12,6))
+                .releaseDate(LocalDate.of(1700, 12, 6))
                 .duration(189)
                 .build();
         ValidationException exception = assertThrows(
@@ -70,7 +70,6 @@ public class FilmControllerTests extends FilmController {
                 () -> filmController.updateFilm(film2));
         assertEquals("Фильма нет в списке", exception.getMessage());
     }
-
 
 
 }
