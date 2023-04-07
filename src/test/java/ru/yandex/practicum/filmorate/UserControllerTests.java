@@ -27,7 +27,7 @@ public class UserControllerTests extends UserController {
             .build();
 
     @BeforeEach
-    public void beforeEach() {
+    private void beforeEach() {
         userController.getUsers().clear();
     }
 

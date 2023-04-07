@@ -68,7 +68,7 @@ public class UserController {
         }
     }
 
-    public int getNextId() {
+    private int getNextId() {
         return nextId++;
     }
 
