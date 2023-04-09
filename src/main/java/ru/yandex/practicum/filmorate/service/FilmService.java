@@ -60,13 +60,13 @@ public class FilmService {
     }
 
     public void checkUsers(int userId) {
-        if (userStorage.getUserById(userId) != null) {
+        if (!userStorage.getListUsers().contains(userStorage.getUserById(userId))) {
             throw new UserNotFoundException("Пользователь c id: " + userId + "не найден");
         }
     }
 
     public void checkFilms(int filmId) {
-        if (filmStorage.getFilmById(filmId) != null) {
+        if (!filmStorage.getListFilms().contains(filmStorage.getFilmById(filmId))) {
             throw new FilmNotFoundException("Фильм c id: " + filmId + "не найден");
         }
     }
