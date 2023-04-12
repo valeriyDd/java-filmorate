@@ -21,7 +21,6 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    /*rtyhjt*/
 
     @Override
     public Collection<User> getAll() {

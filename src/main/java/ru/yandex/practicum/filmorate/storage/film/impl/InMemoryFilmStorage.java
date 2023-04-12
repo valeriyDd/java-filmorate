@@ -71,8 +71,8 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
         Optional<Film> film = super.getById(id);
 
-        return film.<Collection<Integer>>map(value -> value
-                        .getGenres().stream()
+        return film.<Collection<Integer>>map(value -> value.
+                        getGenres().stream()
                         .map(Genre::getId)
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
