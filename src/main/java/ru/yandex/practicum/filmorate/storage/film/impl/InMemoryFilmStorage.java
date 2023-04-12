@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.impl;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
@@ -20,7 +20,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
     @Override
     protected void validate(Long id) {
         if (notContainsId(id)) {
-            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", id));
+            throw new FilmNotFoundException(String.format("Фильм %s не существует", id));
         }
     }
 
