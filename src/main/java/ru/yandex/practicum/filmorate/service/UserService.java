@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -31,7 +31,7 @@ public class UserService {
 
     public User updateUser(User user) {
         if (userStorage.getById(user.getId()).isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", user.getId()));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", user.getId()));
         }
 
         return userStorage.update(user);
@@ -40,7 +40,7 @@ public class UserService {
     public User getUserById(Long id) {
         Optional<User> user = userStorage.getById(id);
         if (user.isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", id));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", id));
         }
 
         return user.get();
@@ -68,7 +68,7 @@ public class UserService {
         Optional<User> user = userStorage.deleteFriend(userId, friendId);
 
         if (user.isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", friendId));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", friendId));
         }
 
         return user.get();

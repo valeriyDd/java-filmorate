@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user.impl;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -16,7 +16,7 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
     @Override
     public void validate(Long id) {
         if (notContainsId(id)) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", id));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", id));
         }
     }
 

@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
+import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -45,7 +45,7 @@ public class FilmService {
         Optional<Film> film = filmStorage.getById(id);
 
         if (film.isEmpty()) {
-            throw new FilmNotFoundException(String.format("Фильм %s не существует", id));
+            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", id));
         }
 
         film.get().setGenres(filmStorage.getGenres(id).stream().map(genreDbStorage::getById).collect(Collectors.toSet()));
@@ -64,13 +64,13 @@ public class FilmService {
 
     public Film addLike(Long filmId, Long userId) {
         if (userStorage.getById(userId).isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", userId));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", userId));
         }
 
         Optional<Film> film = filmStorage.addLike(filmId, userId);
 
         if (film.isEmpty()) {
-            throw new FilmNotFoundException(String.format("Фильм %s не существует", filmId));
+            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", filmId));
         }
 
         return film.get();
@@ -80,11 +80,11 @@ public class FilmService {
         Optional<Film> film = filmStorage.removeLike(filmId, userId);
 
         if (userStorage.getById(userId).isEmpty()) {
-            throw new UserNotFoundException(String.format("Пользователь %s не существует", userId));
+            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", userId));
         }
 
         if (film.isEmpty()) {
-            throw new FilmNotFoundException(String.format("Фильм %s не существует", filmId));
+            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", filmId));
         }
 
         return film.get();
