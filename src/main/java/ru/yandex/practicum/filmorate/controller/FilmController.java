@@ -2,10 +2,11 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import java.sql.SQLException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@Valid @Validated @RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         film = filmService.addFilm(film);
         log.info("Добавлен новый фильм: {}", film);
         return film;
@@ -49,7 +50,7 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public Film addLike(@PathVariable Long id,
-                        @PathVariable Long userId) {
+                        @PathVariable Long userId) throws SQLException {
         Film film = filmService.addLike(id, userId);
         log.info("Пользователь {} поставил лайк фильму {}", userId, id);
         return film;
