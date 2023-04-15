@@ -7,16 +7,16 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.reverseOrder;
 
 @Component
 public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmStorage {
+
+    private final Map<Long, Film> films = new HashMap<>();
+
     @Override
     protected void validate(Long id) {
         if (notContainsId(id)) {
@@ -26,6 +26,9 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film create(Film film) {
+        if (films.containsValue(film)) {
+            throw new FilmDoesNotExistException(String.format("Фильм уже добавлен в библиотеку"));
+        }
         film.setId(getNextId());
         super.create(film.getId(), film);
         return film;
@@ -33,6 +36,9 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film update(Film film) {
+        if (!films.containsKey(film.getId())) {
+            throw new FilmDoesNotExistException((String.format("Такого фильма не существует")));
+        }
         super.update(film.getId(), film);
         return film;
     }

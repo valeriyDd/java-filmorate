@@ -11,7 +11,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage extends AbstractStorage<User> implements UserStorage {
+
+    private final Map<Long, User> users;
     private final Map<Long, List<Long>> friends = new HashMap<>();
+
+    public InMemoryUserStorage(Map<Long, User> users) {
+        this.users = users;
+    }
 
     @Override
     public void validate(Long id) {
@@ -29,6 +35,9 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User create(User user) {
+        if (users.containsValue(user)) {
+            throw new UserDoesNotExistException(String.format("Пользователь уже добавлен"));
+        }
         user.setId(getNextId());
         super.create(user.getId(), user);
         return user;
@@ -36,6 +45,9 @@ public class InMemoryUserStorage extends AbstractStorage<User> implements UserSt
 
     @Override
     public User update(User user) {
+        if (!users.containsKey(user.getId())) {
+            throw new UserDoesNotExistException(String.format("Обновляемого пользователя не существует"));
+        }
         super.update(user.getId(), user);
         return user;
     }
