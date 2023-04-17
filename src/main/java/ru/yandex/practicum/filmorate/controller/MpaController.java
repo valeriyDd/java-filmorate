@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.exception.MpaDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
@@ -25,6 +26,9 @@ public class MpaController {
 
     @GetMapping("/{id}")
     public Mpa getMpaById(@PathVariable Integer id) {
+        if (id < 1) {
+            throw new MpaDoesNotExistException(String.format("id рейтинга не может быть менье одного"));
+        }
         return mpaService.getMpaById(id);
     }
 }

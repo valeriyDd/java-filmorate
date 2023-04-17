@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.exception.GenreDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
@@ -25,6 +26,9 @@ public class GenreController {
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable Integer id) {
+        if (id < 1) {
+            throw new GenreDoesNotExistException(String.format("id жанра не может быть меньше 1"));
+        }
         return genreService.getGenreById(id);
     }
 }

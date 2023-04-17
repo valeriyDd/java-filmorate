@@ -26,7 +26,7 @@ public class InMemoryFilmStorage extends AbstractStorage<Film> implements FilmSt
 
     @Override
     public Film create(Film film) {
-        if (films.containsValue(film)) {
+        if (films.containsKey(film.getId())) {
             throw new FilmDoesNotExistException(String.format("Фильм уже добавлен в библиотеку"));
         }
         film.setId(getNextId());
