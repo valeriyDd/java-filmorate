@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.GenreDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -76,8 +77,13 @@ public class FilmDbStorage implements FilmStorage {
                 .withTableName("film_genre")
                 .usingColumns("film_id", "genre_id");
 
+
         for (Genre genre : film.getGenres()) {
-            simpleJdbcInsert.execute(Map.of("film_id", film.getId().toString(), "genre_id", genre.getId()));
+            if(genre.getId() != null) {
+                simpleJdbcInsert.execute(Map.of("film_id", film.getId().toString(), "genre_id", genre.getId()));
+            } else {
+                throw new GenreDoesNotExistException(String.format("Id жанра не может быть пустым"));
+            }
         }
     }
 
