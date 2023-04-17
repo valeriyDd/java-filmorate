@@ -79,7 +79,7 @@ public class FilmDbStorage implements FilmStorage {
 
 
         for (Genre genre : film.getGenres()) {
-            if(genre.getId() != null) {
+            if (genre.getId() != null) {
                 simpleJdbcInsert.execute(Map.of("film_id", film.getId().toString(), "genre_id", genre.getId()));
             } else {
                 throw new GenreDoesNotExistException(String.format("Id жанра не может быть пустым"));
