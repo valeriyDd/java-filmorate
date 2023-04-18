@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public void addFriend(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <=0 || friendId <= 0) {
+        if (userId <= 0 || friendId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "id и friendId не могут быть отрицательныи либо равены 0");
         }
@@ -56,7 +56,7 @@ public class UserService {
     }
 
     public void deleteFriend(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <=0 || friendId <= 0) {
+        if (userId <= 0 || friendId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "id и friendId не могут быть отрицательныи либо равены 0");
         }
@@ -69,7 +69,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <=0 || friendId <= 0) {
+        if (userId <= 0 || friendId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "id и friendId не могут быть отрицательныи либо равены 0");
         }
@@ -77,12 +77,12 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Невозможно запросить общих друзей самого себя");
         }
-        return  users.getCommonFriends(userId, friendId);
+        return users.getCommonFriends(userId, friendId);
     }
 
     public List<User> getFriends(Integer friendId) throws ResponseStatusException {
 
-        if (friendId <=0 ) {
+        if (friendId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
         }
 

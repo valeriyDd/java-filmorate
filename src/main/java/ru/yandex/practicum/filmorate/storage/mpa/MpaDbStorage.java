@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository("MpaDbStorage")
-public class MpaDbStorage implements MpaStorage{
+public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

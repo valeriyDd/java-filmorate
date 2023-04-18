@@ -52,7 +52,7 @@ public class FilmService {
     }
 
     public void addLike(Integer userId, Integer filmId) throws ResponseStatusException {
-        if (userId <=0 || filmId <= 0) {
+        if (userId <= 0 || filmId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "id и filmId не могут быть отрицательныи либо равены 0");
         }
@@ -61,7 +61,7 @@ public class FilmService {
     }
 
     public void deleteLike(Integer userId, Integer filmId) throws ResponseStatusException {
-        if (userId <=0 || filmId <= 0) {
+        if (userId <= 0 || filmId <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "id и filmId не могут быть отрицательныи либо равены 0");
         }

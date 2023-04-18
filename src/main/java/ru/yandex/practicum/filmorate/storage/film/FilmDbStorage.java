@@ -20,7 +20,7 @@ import java.util.*;
 
 @Repository("FilmDbStorage")
 @Slf4j
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -49,7 +49,7 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     @Override
-    public Film update (Film film) {
+    public Film update(Film film) {
         String sqlQuery = "UPDATE film " +
                 "SET name = ?, description = ?, release_date = ?, duration = ?, mpa = ? WHERE film_id = ?";
         if (jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate()
@@ -90,7 +90,7 @@ public class FilmDbStorage implements FilmStorage{
     }
 
     @Override
-    public void addLike(Integer userId, Integer filmId) throws  ResponseStatusException {
+    public void addLike(Integer userId, Integer filmId) throws ResponseStatusException {
         if (!dbContainsUser(userId)) {
             String message = "Ошибка запроса добавления лайка фильму." +
                     " Невозможно поставить лайк от пользователя с id= " + userId + " которого не существует.";
@@ -104,7 +104,7 @@ public class FilmDbStorage implements FilmStorage{
         String sqlQuery = "INSERT INTO likes (person_id, film_id) VALUES (?, ?)";
         try {
             jdbcTemplate.update(sqlQuery, userId, filmId);
-        } catch (DuplicateKeyException e ) {
+        } catch (DuplicateKeyException e) {
             String message = "Ошибка запроса добавления лайка фильму." +
                     " Попытка полькователем поставить лайк дважды одному фильму.";
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);

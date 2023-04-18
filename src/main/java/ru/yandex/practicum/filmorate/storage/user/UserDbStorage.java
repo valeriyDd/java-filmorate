@@ -40,6 +40,7 @@ public class UserDbStorage implements UserStorage {
 
     public void delete(User user) {
     }
+
     @Override
     public void update(User user) {
         String sqlQuery = "UPDATE person " +
