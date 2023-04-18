@@ -1,40 +1,43 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.validator.FilmReleaseDateConstraint;
+import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+
+
+import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder(toBuilder = true)
+@Builder
 public class Film {
-    Long id;
-
-    @NotNull @NotBlank String name;
-
-    @Size(max = 200) String description;
-
+    @EqualsAndHashCode.Exclude
+    private Integer id;
+    @NotBlank(message = "Название не может быть пустым")
+    private String name;
+    @Size(max = 200, message = "Максимальная длина описания 200 символов")
+    private String description;
+    @PastOrPresent(message = "Некорректная дата релиза")
+    private LocalDate releaseDate;
+    @Positive(message = "Некорректная продолжительность фильма")
+    private Integer duration;
+    @EqualsAndHashCode.Exclude
+    private final Set<User> likes = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private final Set<Genre> genres = new TreeSet<>();
+    @EqualsAndHashCode.Exclude
     @NotNull
-    @FilmReleaseDateConstraint
-    LocalDate releaseDate;
+    private Mpa mpa;
 
-    @Positive Integer duration;
-
-    @JsonIgnore
-    Set<Long> likes = new HashSet<>();
-    Mpa mpa;
-    Set<Genre> genres = new LinkedHashSet<>();
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("name", name);
+        values.put("description", description);
+        values.put("release_date", releaseDate);
+        values.put("duration", duration);
+        values.put("mpa", mpa.getId());
+        return values;
+    }
 }

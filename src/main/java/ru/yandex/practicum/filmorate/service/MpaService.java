@@ -1,29 +1,28 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.MpaDoesNotExistException;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.mpa.impl.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class MpaService {
-    private final MpaDbStorage mpaDbStorage;
+    private final MpaStorage mpas;
 
-    public MpaService(MpaDbStorage mpaDbStorage) {
-        this.mpaDbStorage = mpaDbStorage;
+    @Autowired
+    public MpaService(MpaStorage mpas) {
+        this.mpas = mpas;
     }
 
-    public Collection<Mpa> getAllMpa() {
-        return mpaDbStorage.getAll();
+    public Mpa getMpa(Integer id) {
+        return mpas.getMpa(id);
     }
 
-    public Mpa getMpaById(Integer id) {
-        try {
-            return mpaDbStorage.getById(id);
-        } catch (Exception e) {
-            throw new MpaDoesNotExistException(String.format("MPA рейтинг %s не существует", id));
-        }
+    public List<Mpa> getMpasList() {
+        return mpas.getMpasList();
     }
 }

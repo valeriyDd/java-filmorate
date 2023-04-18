@@ -1,39 +1,32 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.validator.WhitespacesConstraint;
+import lombok.*;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
+@Builder
 public class User {
-    Long id;
+    @EqualsAndHashCode.Exclude
+    private Integer id;
+    @Email(message = "некорректный email")
+    private String email;
+    @NotBlank(message = "Логин не может быть пустым или null")
+    private String login;
+    private String name;
+    @Past(message = "Дата рождения не может быть в будущем")
+    private LocalDate birthday;
+    private final Set<User> friends = new HashSet<>();
 
-    @NotNull
-    @NotBlank
-    @Email
-    String email;
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("email", email);
+        values.put("login", login);
+        values.put("name", name);
+        values.put("birthday", birthday);
+        return values;
+    }
 
-    @NotNull
-    @NotBlank
-    @WhitespacesConstraint
-    String login;
-
-    String name;
-
-    @NotNull
-    @PastOrPresent
-    LocalDate birthday;
-    private Set<Integer> friends;
 }

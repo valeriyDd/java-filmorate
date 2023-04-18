@@ -1,29 +1,26 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.GenreDoesNotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.genre.impl.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class GenreService {
-    private final GenreDbStorage genreDbStorage;
+    private final GenreStorage genres;
 
-    public GenreService(GenreDbStorage genreDbStorage) {
-        this.genreDbStorage = genreDbStorage;
+    @Autowired
+    public GenreService(GenreStorage genres) {
+        this.genres = genres;
     }
 
-    public Collection<Genre> getAllGenres() {
-        return genreDbStorage.getAll();
+    public Genre getGenre(Integer id) {
+        return genres.getGenre(id);
     }
 
-    public Genre getGenreById(Integer id) {
-        try {
-            return genreDbStorage.getById(id);
-        } catch (Exception e) {
-            throw new GenreDoesNotExistException(String.format("Жанр %s не существует", id));
-        }
+    public List<Genre> getGenreList() {
+        return genres.getGenresList();
     }
 }

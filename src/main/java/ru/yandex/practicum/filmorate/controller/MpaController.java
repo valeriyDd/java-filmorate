@@ -1,34 +1,28 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.MpaDoesNotExistException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/mpa")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MpaController {
     private final MpaService mpaService;
 
-    public MpaController(MpaService mpaService) {
-        this.mpaService = mpaService;
-    }
-
     @GetMapping
-    public Collection<Mpa> getAllMpa() {
-        return mpaService.getAllMpa();
+    @ResponseStatus(HttpStatus.OK)
+    public List<Mpa> getMpasList() {
+        return mpaService.getMpasList();
     }
 
-    @GetMapping("/{id}")
-    public Mpa getMpaById(@PathVariable Integer id) {
-        if (id < 1) {
-            throw new MpaDoesNotExistException(String.format("id рейтинга не может быть менье одного"));
-        }
-        return mpaService.getMpaById(id);
+    @GetMapping("{id}")
+    public Mpa getMpa(@PathVariable("id") Integer id) {
+        return mpaService.getMpa(id);
     }
 }

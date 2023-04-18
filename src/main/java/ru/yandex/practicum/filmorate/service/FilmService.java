@@ -1,102 +1,94 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
-import ru.yandex.practicum.filmorate.exception.UserDoesNotExistException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genre.impl.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
-
-    private final GenreDbStorage genreDbStorage;
+    private final FilmStorage films;
+    private final LocalDate minDate = LocalDate.of(1895, 12, 28);
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, GenreDbStorage genreDbStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.genreDbStorage = genreDbStorage;
+
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage films) {
+        this.films = films;
     }
 
-    public Collection<Film> getAllFilms() {
-        Collection<Film> films = filmStorage.getAll();
-
-        for (Film film : films) {
-            film.setGenres(filmStorage.getGenres(film.getId()).stream().map(genreDbStorage::getById).collect(Collectors.toSet()));
+    public Film addFilm(Film film) throws ResponseStatusException {
+        if (film.getReleaseDate().isBefore(minDate)) {
+            log.warn("Дата релиза не может быть раньше 28.12.1895\nТекущая дата релиза: " + film.getReleaseDate());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата релиза не может быть раньше 28.12.1895");
         }
-
-        return films;
+        films.add(film);
+        log.info("Фильм {} сохранен", film);
+        return film;
     }
 
-    public Film addFilm(Film film) {
-        return filmStorage.create(film);
+    public Film updateFilm(Film film) throws ResponseStatusException {
+        if (film.getReleaseDate().isBefore(minDate)) {
+            log.warn("Дата релиза не может быть раньше 28.12.1895\nТекущая дата релиза: " + film.getReleaseDate());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата релиза не может быть раньше 28.12.1895");
+        }
+        log.info("Фильм {} обновлен", film);
+        return films.update(film);
     }
 
-    public Film getFilmById(Long id) {
-        Optional<Film> film = filmStorage.getById(id);
-
-        if (film.isEmpty()) {
-            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", id));
-        }
-
-        film.get().setGenres(filmStorage.getGenres(id).stream().map(genreDbStorage::getById).collect(Collectors.toSet()));
-        return film.get();
+    public List<Film> getFilms() {
+        log.info("Текущее кол-во фильмов: " + films.getFilmsList().size());
+        return films.getFilmsList();
     }
 
-    public Film updateFilm(Film film) {
-        getFilmById(film.getId());
-
-        Set<Genre> genres = film.getGenres().stream()
-                .sorted(Comparator.comparing(Genre::getId))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        return filmStorage.update(film).toBuilder().genres(genres).build();
+    public void addLike(Integer userId, Integer filmId) throws ResponseStatusException {
+        if (userId <=0 || filmId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "id и filmId не могут быть отрицательныи либо равены 0");
+        }
+        films.addLike(userId, filmId);
+        log.info("Пользователь c id = " + userId + " поставил лайк фильму c id = " + filmId);
     }
 
-    public Film addLike(Long filmId, Long userId) {
-        if (userStorage.getById(userId).isEmpty()) {
-            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", userId));
+    public void deleteLike(Integer userId, Integer filmId) throws ResponseStatusException {
+        if (userId <=0 || filmId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "id и filmId не могут быть отрицательныи либо равены 0");
         }
-
-        Optional<Film> film = filmStorage.addLike(filmId, userId);
-
-        if (film.isEmpty()) {
-            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", filmId));
-        }
-
-        return film.get();
+        films.deleteLike(userId, filmId);
+        log.info("Пользователь c id=" + userId + " удалил лайк с фильма id= " + filmId);
     }
 
-    public Film removeLike(Long filmId, Long userId) {
-        Optional<Film> film = filmStorage.removeLike(filmId, userId);
-
-        if (userStorage.getById(userId).isEmpty()) {
-            throw new UserDoesNotExistException(String.format("Пользователь %s не существует", userId));
+    public List<Film> getSortedFilms(Integer count) throws ResponseStatusException {
+        if (count <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "count не может быть отрицательным либо равен 0");
         }
+        Comparator<Film> sortFilm = (f1, f2) -> {
+            Integer filmLikes1 = f1.getLikes().size();
+            Integer filmLikes2 = f2.getLikes().size();
+            return -1 * filmLikes1.compareTo(filmLikes2);
 
-        if (film.isEmpty()) {
-            throw new FilmDoesNotExistException(String.format("Фильм %s не существует", filmId));
-        }
-
-        return film.get();
+        };
+        return films.getFilmsList().stream().sorted(sortFilm).limit(count)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public Collection<Film> getTop(Integer count) {
-        Collection<Film> films = filmStorage.getTop(count);
-
-        for (Film film : films) {
-            film.setGenres(filmStorage.getGenres(film.getId()).stream().map(genreDbStorage::getById).collect(Collectors.toSet()));
+    public Film getFilm(Integer filmId) {
+        if (filmId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "id не может быть отрицательным либо равен 0");
         }
-
-        return films;
+        return films.getFilm(filmId);
     }
 }
