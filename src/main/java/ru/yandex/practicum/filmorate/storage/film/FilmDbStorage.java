@@ -43,10 +43,10 @@ public class FilmDbStorage implements FilmStorage {
                         film.getId(), genre.getId());
             }
         }
-            jdbcTemplate.update("UPDATE FILMS SET RATE_ID = ? WHERE FILM_ID = ?",
-                    film.getMpa().getId(),
-                    film.getId()
-            );
+        jdbcTemplate.update("UPDATE FILMS SET RATE_ID = ? WHERE FILM_ID = ?",
+                film.getMpa().getId(),
+                film.getId()
+        );
 
         log.info("New film added: {}", film);
         return film;

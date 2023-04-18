@@ -36,17 +36,21 @@ public class UserService {
     public User updateUser(User user) {
         return userStorage.update(user);
     }
+
     public Collection<User> getUsers() {
         System.out.println(userStorage.getAll());
         return userStorage.getAll();
     }
+
     public User deleteUser(User user) {
         return userStorage.delete(user);
     }
+
     public User getUserById(Long id) {
         return userStorage.getById(id).orElseThrow(() ->
                 new UserNotFoundException(String.format("Request user with absent id = %d", id)));
     }
+
     public void addFriend(Long id, Long friendId) {
         friendsStorage.addFriend(id, friendId);
         log.info("User id = {} added to friends user id={}", id, friendId);

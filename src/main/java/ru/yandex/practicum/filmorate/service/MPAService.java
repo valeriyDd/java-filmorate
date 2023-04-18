@@ -18,7 +18,7 @@ public class MPAService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Collection<Mpa> getMpa () {
+    public Collection<Mpa> getMpa() {
         return jdbcTemplate.query("SELECT * FROM RATES_MPA",
                 ((rs, rowNum) -> new Mpa(
                         rs.getInt("mpa_id"),

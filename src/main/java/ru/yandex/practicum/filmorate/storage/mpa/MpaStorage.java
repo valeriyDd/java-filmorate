@@ -8,7 +8,8 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 @Component
 public class MpaStorage {
     JdbcTemplate jdbcTemplate;
-    public MpaStorage (JdbcTemplate jdbcTemplate) {
+
+    public MpaStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -18,7 +19,6 @@ public class MpaStorage {
         if (userRows.next()) {
             return new Mpa(mpaId,
                     userRows.getString("mpa_name"));
-        }
-        else return null;
+        } else return null;
     }
 }

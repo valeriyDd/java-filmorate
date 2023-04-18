@@ -57,12 +57,12 @@ public class LikesStorage {
     }
 
     public List<Film> getPopular(int count) {
-       String sql = "SELECT FILMS.FILM_ID, NAME, DESCRIPTION, RELEASEDATE, DURATION, RATE_ID , " +
-               "COUNT(L.USER_ID) as RATING FROM FILMS LEFT JOIN LIKES L on FILMS.FILM_ID = L.FILM_ID " +
-               "GROUP BY FILMS.FILM_ID " +
-               "ORDER BY RATING DESC LIMIT ?";
+        String sql = "SELECT FILMS.FILM_ID, NAME, DESCRIPTION, RELEASEDATE, DURATION, RATE_ID , " +
+                "COUNT(L.USER_ID) as RATING FROM FILMS LEFT JOIN LIKES L on FILMS.FILM_ID = L.FILM_ID " +
+                "GROUP BY FILMS.FILM_ID " +
+                "ORDER BY RATING DESC LIMIT ?";
         System.out.println(count);
-        List <Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> new Film(
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> new Film(
                 rs.getLong("film_id"),
                 rs.getString("name"),
                 rs.getString("description"),

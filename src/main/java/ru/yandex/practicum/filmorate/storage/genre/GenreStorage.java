@@ -11,6 +11,7 @@ import java.util.TreeSet;
 @Component
 public class GenreStorage {
     JdbcTemplate jdbcTemplate;
+
     public GenreStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

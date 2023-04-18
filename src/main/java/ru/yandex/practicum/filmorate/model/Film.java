@@ -11,13 +11,21 @@ import java.util.*;
 @NoArgsConstructor
 public class Film {
     private Long id;
-    @NotBlank private String name;
-    @NotBlank @Size(max = 200) private String description;
-    @NotNull @Past private LocalDate releaseDate;
-    @NotNull @Positive private int duration;
+    @NotBlank
+    private String name;
+    @NotBlank
+    @Size(max = 200)
+    private String description;
+    @NotNull
+    @Past
+    private LocalDate releaseDate;
+    @NotNull
+    @Positive
+    private int duration;
     private Set<Long> likes = new TreeSet<>();
     private Set<Genre> genres;
-    @NotNull private Mpa mpa;
+    @NotNull
+    private Mpa mpa;
     private Long rating;
 
 
@@ -52,7 +60,7 @@ public class Film {
         this.rating = rating;
     }
 
-    public int getRating(){
+    public int getRating() {
         return likes.size();
     }
 

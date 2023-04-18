@@ -48,7 +48,7 @@ public class FilmService {
     public Film updateFilm(Film film) {
         filmStorage.update(film);
         Film filmReturn = filmStorage.getById(film.getId()).orElseThrow(
-                () ->  new FilmNotFoundException(String.format("Request film with absent id = %d", id)));
+                () -> new FilmNotFoundException(String.format("Request film with absent id = %d", id)));
         if (film.getGenres() == null) filmReturn.setGenres(null);
         else if (film.getGenres().isEmpty()) filmReturn.setGenres(new HashSet<>());
         return filmReturn;
@@ -60,7 +60,7 @@ public class FilmService {
 
     public Film getFilmById(Long id) {
         return filmStorage.getById(id)
-                .orElseThrow(() ->  new FilmNotFoundException(String.format("Request film with absent id = %d", id)));
+                .orElseThrow(() -> new FilmNotFoundException(String.format("Request film with absent id = %d", id)));
     }
 
     public void addLike(Long id, Long userId) {

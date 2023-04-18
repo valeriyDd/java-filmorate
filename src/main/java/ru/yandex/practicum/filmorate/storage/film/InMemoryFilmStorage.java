@@ -47,7 +47,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.containsKey(film.getId())) {
             log.info("Film {} was deleted", film);
             return films.remove(film.getId());
-        }
-        else throw new FilmNotFoundException(String.format("Attempt to delete film with absent id = %d", film.getId()));
+        } else
+            throw new FilmNotFoundException(String.format("Attempt to delete film with absent id = %d", film.getId()));
     }
 }

@@ -13,10 +13,15 @@ import java.util.*;
 @NoArgsConstructor
 public class User {
     private Long id;
-    @NotNull @Email private String email;
-    @Pattern(regexp = "\\S+") private String login;
+    @NotNull
+    @Email
+    private String email;
+    @Pattern(regexp = "\\S+")
+    private String login;
     private String name;
-    @NotNull @Past private LocalDate birthday;
+    @NotNull
+    @Past
+    private LocalDate birthday;
     private Set<Long> friends = new HashSet<>();
 
     public User(Long id, String email, String login, String name, LocalDate birthday) {
@@ -31,6 +36,7 @@ public class User {
         if (name == null || name.isBlank()) return login;
         else return name;
     }
+
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();
         values.put("email", email);

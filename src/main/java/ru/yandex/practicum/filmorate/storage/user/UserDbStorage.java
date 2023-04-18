@@ -82,11 +82,11 @@ public class UserDbStorage implements UserStorage {
                     userRows.getString("login"),
                     userRows.getString("name"),
                     userRows.getDate("birthday").toLocalDate()
-                    );
+            );
             log.info("Found user id = {}", id);
             return Optional.of(user);
         } else {
-           return Optional.empty();
+            return Optional.empty();
         }
     }
 

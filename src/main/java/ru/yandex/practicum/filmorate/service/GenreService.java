@@ -18,7 +18,7 @@ public class GenreService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Collection<Genre> getGenres () {
+    public Collection<Genre> getGenres() {
         return jdbcTemplate.query("SELECT * FROM GENRES",
                 ((rs, rowNum) -> new Genre(
                         rs.getInt("genre_id"),
