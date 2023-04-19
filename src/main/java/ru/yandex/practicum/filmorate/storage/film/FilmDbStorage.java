@@ -60,6 +60,29 @@ public class FilmDbStorage implements FilmStorage {
                 }
             });
         }
+
+        if (film.getMpa() != null) {
+            List<Mpa> mpas = List.copyOf(Collections.singleton(film.getMpa()));
+            long nullIdMpas = mpas.stream().filter(genre -> genre.getId() == null).count();
+            if (nullIdMpas > 0) {
+                throw new NotFoundException("id рейтинга не указан");
+            }
+            film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
+            String sqlToFilmGenre = "INSERT INTO FILM_GENRES (genre_id, film_id) VALUES(?, ?)";
+            jdbcTemplate.batchUpdate(sqlToFilmGenre, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, mpas.get(i).getId());
+                    ps.setInt(2, film.getId());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return mpas.size();
+                }
+            });
+
+        }
         jdbcTemplate.update("UPDATE FILMS SET RATE_ID = ? WHERE FILM_ID = ?",
                 film.getMpa().getId(),
                 film.getId()
