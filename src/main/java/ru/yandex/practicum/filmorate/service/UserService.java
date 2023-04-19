@@ -1,57 +1,59 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.friend.FriendsStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
-@Slf4j
 public class UserService {
 
-    private final UserStorage userStorage;
+    UserStorage userStorage;
+    FriendsStorage friendsStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsStorage friendsStorage) {
+        this.friendsStorage = friendsStorage;
         this.userStorage = userStorage;
     }
 
+    public Collection<User> getAllUsers() {
+        return userStorage.getUsers();
+    }
+
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
 
-    public User deleteUser(User user) {
-        return userStorage.deleteUser(user);
+    public User getUser(int id) {
+        if (userStorage.getUser(id) == null) {
+            throw new IllegalArgumentException("неправильный id");
+        }
+        return userStorage.getUser(id);
     }
 
-    public List<User> getListUsers() {
-        return userStorage.getListUsers();
+    public List<User> getFriends(int id) {
+        return friendsStorage.getFriends(id);
     }
 
-    public User getUserById(int id) {
-        return userStorage.getUserById(id);
+    public void addFriend(int id1, int id2) {
+        friendsStorage.addFriend(id1, id2);
     }
 
-    public User addFriend(int userId, int friendId) {
-        return userStorage.addFriend(userId, friendId);
+    public void deleteFriend(int id1, int id2) {
+        friendsStorage.deleteFriend(id1, id2);
     }
 
-    public User deleteFriend(int userId, int friendId) {
-        return userStorage.deleteFriend(userId, friendId);
-    }
-
-    public List<User> getUserFriends(int userId) {
-        return userStorage.getUserFriends(userId);
-    }
-
-    public List<User> getListCommonFriends(int firstUserId, int secondUserId) {
-        return userStorage.getListCommonFriends(firstUserId, secondUserId);
+    public List<User> getCommonFriends(int id1, int id2) {
+        return friendsStorage.getCommonFriends(id1, id2);
     }
 }
