@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
@@ -29,23 +29,23 @@ class MpaStorageImplTest {
     @Test
     @DirtiesContext
     void getMPAs() {
-        List<MPA> mpaList = new ArrayList<>(mpaStorage.getMPAs());
+        List<Mpa> mpaList = new ArrayList<>(mpaStorage.getMPAs());
         assertEquals(5, mpaList.size());
-        assertEquals(mpaList.get(0), new MPA(1, "G"));
-        assertEquals(mpaList.get(1), new MPA(2, "PG"));
-        assertEquals(mpaList.get(2), new MPA(3, "PG-13"));
-        assertEquals(mpaList.get(3), new MPA(4, "R"));
-        assertEquals(mpaList.get(4), new MPA(5, "NC-17"));
+        assertEquals(mpaList.get(0), new Mpa(1, "G"));
+        assertEquals(mpaList.get(1), new Mpa(2, "PG"));
+        assertEquals(mpaList.get(2), new Mpa(3, "PG-13"));
+        assertEquals(mpaList.get(3), new Mpa(4, "R"));
+        assertEquals(mpaList.get(4), new Mpa(5, "NC-17"));
     }
 
     @Test
     @DirtiesContext
     void getMpaById() {
-        assertEquals(mpaStorage.getMpaById(1), new MPA(1, "G"));
-        assertEquals(mpaStorage.getMpaById(2), new MPA(2, "PG"));
-        assertEquals(mpaStorage.getMpaById(3), new MPA(3, "PG-13"));
-        assertEquals(mpaStorage.getMpaById(4), new MPA(4, "R"));
-        assertEquals(mpaStorage.getMpaById(5), new MPA(5, "NC-17"));
+        assertEquals(mpaStorage.getMpaById(1), new Mpa(1, "G"));
+        assertEquals(mpaStorage.getMpaById(2), new Mpa(2, "PG"));
+        assertEquals(mpaStorage.getMpaById(3), new Mpa(3, "PG-13"));
+        assertEquals(mpaStorage.getMpaById(4), new Mpa(4, "R"));
+        assertEquals(mpaStorage.getMpaById(5), new Mpa(5, "NC-17"));
         assertThrows(InvalidDataAccessApiUsageException.class, () -> mpaStorage.getMpaById(999));
     }
 
@@ -54,10 +54,10 @@ class MpaStorageImplTest {
     void updateFilmMPA() {
         Film film = Film.builder().name("name").description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1)).duration(100)
-                .mpa(new MPA(1, "G")).build();
+                .mpa(new Mpa(1, "G")).build();
         film = filmDbStorage.addFilm(film);
         assertEquals(mpaStorage.getMpaById(film.getMpa().getId()), film.getMpa());
-        film.setMpa(new MPA(3, "PG-13"));
+        film.setMpa(new Mpa(3, "PG-13"));
         filmDbStorage.updateFilm(film);
         assertEquals(mpaStorage.getMpaById(film.getMpa().getId()), film.getMpa());
     }

@@ -9,7 +9,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
@@ -58,7 +58,7 @@ class GenresStorageImplTest {
     void getGenresByFilmId() {
         Film film = Film.builder().name("name").description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1)).duration(100)
-                .mpa(new MPA(1, "G"))
+                .mpa(new Mpa(1, "G"))
                 .genres(new ArrayList<>(genresStorage.getGenres().subList(0, 2))).build();
         film = filmStorage.addFilm(film);
         assertEquals(2, genresStorage.getGenresByFilmId(film.getId()).size());
@@ -70,7 +70,7 @@ class GenresStorageImplTest {
     void addFilmGenre() {
         Film film = Film.builder().name("name").description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1)).duration(100)
-                .mpa(new MPA(1, "G"))
+                .mpa(new Mpa(1, "G"))
                 .genres(new ArrayList<>(genresStorage.getGenres().subList(0, 2))).build();
         film = filmStorage.addFilm(film);
         assertEquals(2, genresStorage.getGenresByFilmId(film.getId()).size());
@@ -86,7 +86,7 @@ class GenresStorageImplTest {
     void deleteFilmGenres() {
         Film film = Film.builder().name("name").description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1)).duration(100)
-                .mpa(new MPA(1, "G"))
+                .mpa(new Mpa(1, "G"))
                 .genres(new ArrayList<>(genresStorage.getGenres().subList(0, 3))).build();
         film = filmStorage.addFilm(film);
         assertEquals(3, genresStorage.getGenresByFilmId(film.getId()).size());

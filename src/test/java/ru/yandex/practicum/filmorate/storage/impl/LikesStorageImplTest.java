@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.likes.LikesStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
@@ -35,10 +35,10 @@ class LikesStorageImplTest {
     void beforeAll() {
         film = Film.builder().name("name").description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1)).duration(100)
-                .mpa(new MPA(1, "G")).build();
+                .mpa(new Mpa(1, "G")).build();
         film2 = Film.builder().name("name2").description("description2")
                 .releaseDate(LocalDate.of(2003, 4, 5)).duration(10)
-                .mpa(new MPA(1, "G")).build();
+                .mpa(new Mpa(1, "G")).build();
         user = User.builder().email("email@yandex.ru").login("login").name("name")
                 .birthday(LocalDate.of(2000, 1, 1)).build();
         user2 = User.builder().email("email2@yandex.ru").login("login2").name("name2")
