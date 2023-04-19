@@ -1,158 +1,97 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friend.FriendsStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-
-@Slf4j
-@Primary
-@Component("userDbStorage")
+@Repository
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insertUser;
+    private final FriendsStorage friendsStorage;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, DataSource dataSource, FriendsStorage friendsStorage) {
+        this.insertUser = new SimpleJdbcInsert(dataSource).withTableName("USERS")
+                .usingGeneratedKeyColumns("USER_ID");
         this.jdbcTemplate = jdbcTemplate;
+        this.friendsStorage = friendsStorage;
     }
 
     @Override
-    public User add(User user) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("USERS")
-                .usingGeneratedKeyColumns("user_id");
-        user.setId(simpleJdbcInsert.executeAndReturnKey(user.toMap()).intValue());
-        log.info("Пользователь добавлен: {}", user);
+    public Collection<User> getUsers() {
+        return jdbcTemplate.query("SELECT * FROM USERS", (rs, rowNum) -> {
+            User u = new User();
+            u.setId(rs.getInt("USER_ID"));
+            u.setLogin(rs.getString("LOGIN"));
+            u.setName(rs.getString("NAME"));
+            u.setEmail(rs.getString("EMAIL"));
+            u.setBirthday(LocalDate.parse(rs.getString("BIRTHDAY")));
+            u.setFriends(friendsStorage.getFriends(u.getId()));
+            return u;
+        });
+    }
+
+    @Override
+    public User addUser(User user) {
+        Map<String, Object> parameters = new HashMap<>(4);
+        parameters.put("EMAIL", user.getEmail());
+        parameters.put("LOGIN", user.getLogin());
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        parameters.put("NAME", user.getName());
+        parameters.put("BIRTHDAY", user.getBirthday());
+        Number newId = insertUser.executeAndReturnKey(parameters);
+        user.setId(newId.intValue());
+        user.setFriends(friendsStorage.getFriends(user.getId()));
         return user;
     }
 
     @Override
-    public User update(User user) {
-        if (isUserExists(user.getId())) {
-            String sqlQuery = "UPDATE USERS SET " +
-                    "email = ?, login = ?, name = ?, birthday = ? " +
-                    "WHERE user_id = ?";
-            jdbcTemplate.update(sqlQuery,
-                    user.getEmail(),
-                    user.getLogin(),
-                    user.getName(),
-                    user.getBirthday(),
-                    user.getId());
-            log.info("Пользователь {} обновлен", user);
-            return user;
-        } else {
-            log.error("Пользователь {} не найден", user);
-            throw new NotFoundException("Пользователь не найден");
+    public User updateUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
-    }
-
-    @Override
-    public Collection<User> findAllUsers() {
-        log.info("Получение списка пользователей");
-        String sql = "SELECT * FROM USERS ";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
-                rs.getInt("user_id"),
-                rs.getString("email"),
-                rs.getString("login"),
-                rs.getString("name"),
-                rs.getDate("birthday").toLocalDate())
-        );
-    }
-
-    @Override
-    public User delete(User user) {
-        if (isUserExists(user.getId())) {
-            log.info("Удаление пользователя {} ", user);
-            String sql = "DELETE FROM USERS WHERE user_id = ?";
-            jdbcTemplate.update(sql, user.getId());
-            return user;
-        } else {
-            log.error("Пользователь {} не найден", user);
-            throw new NotFoundException("Пользователь не найден");
+        int status = jdbcTemplate.update("UPDATE USERS SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? " +
+                        "WHERE USER_ID = ?",
+                user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        user.setFriends(friendsStorage.getFriends(user.getId()));
+        if (status != 1) {
+            throw new IllegalArgumentException("неправильный id");
         }
+        return user;
     }
 
     @Override
-    public User getUser(int id) throws NotFoundException {
-        log.info("Получение пользователя с id {} ", id);
-        String sqlQuery =
-                "SELECT u.user_id, " +
-                        "u.email, " +
-                        "u.login, " +
-                        "u.name, " +
-                        "u.birthday, " +
-                        "FROM USERS AS u " +
-                        "WHERE u.user_id = ?;";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id)
-                .stream()
-                .findAny()
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + id + " не существует"));
-    }
-
-    public boolean isUserExists(int id) {
-        log.info("Проверка пользователя");
-        String sql = "SELECT * FROM USERS WHERE user_id = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
-        return userRows.first();
+    public User removeUser(User user) {
+        jdbcTemplate.update("DELETE FROM USERS WHERE USER_ID = ?", user.getId());
+        return user;
     }
 
     @Override
-    public List<Integer> getUserFriendsById(int userId) throws NotFoundException {
-        log.info("Получение списка друзей для пользователя с id {}", userId);
-        String sqlQuery =
-                "SELECT fr.friend_id, " +
-                        "FROM friendships AS fr " +
-                        "WHERE fr.user_id = ?;";
-        return jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
-    }
-
-    @Override
-    public void makeFriends(int userId, int friendId) {
-        log.info("Добавление в друзья user c id {}", userId);
-        String sqlQuery = "INSERT INTO friendships (user_id, friend_id) VALUES (?, ?);";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
-    }
-
-    @Override
-    public void removeFriends(int userId, int friendId) {
-        String sqlQuery = "DELETE FROM friendships WHERE user_id = ? AND friend_id = ?;";
-        jdbcTemplate.update(sqlQuery, userId, friendId);
-        log.info("Удаление из друзей пользователя с id {}", userId);
-    }
-
-    private User makeUser(ResultSet rs) throws SQLException {
-        int id = rs.getInt("user_id");
-        String email = rs.getString("email");
-        String login = rs.getString("login");
-        String name = rs.getString("name");
-        LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        log.info("Создание пользователя {}", login);
-        return new User(id, email, login, name, birthday);
-    }
-
-    @Override
-    public Collection<User> findFriends(int id) {
-        log.info("Поиск друзей");
-        String sql = "SELECT FRIEND_ID, EMAIL, LOGIN, NAME, BIRTHDAY FROM FRIENDSHIPS JOIN USERS U " +
-                "on FRIENDSHIPS.FRIEND_ID = U.USER_ID WHERE " +
-                "FRIENDSHIPS.USER_ID = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
-                        rs.getInt("friend_id"),
-                        rs.getString("email"),
-                        rs.getString("login"),
-                        rs.getString("name"),
-                        rs.getDate("birthday").toLocalDate()),
-                id
-        );
+    public User getUser(int id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM USERS WHERE USER_ID = ?", id);
+        if (userRows.next()) {
+            User u = new User();
+            u.setId(userRows.getInt("USER_ID"));
+            u.setLogin(userRows.getString("LOGIN"));
+            u.setName(userRows.getString("NAME"));
+            u.setEmail(userRows.getString("EMAIL"));
+            u.setBirthday(Objects.requireNonNull(userRows.getDate("BIRTHDAY")).toLocalDate());
+            u.setFriends(friendsStorage.getFriends(u.getId()));
+            return u;
+        } else {
+            throw new IllegalArgumentException("неправильный id");
+        }
     }
 }
