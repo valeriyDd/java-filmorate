@@ -61,10 +61,10 @@ public class FilmDbStorage implements FilmStorage {
             });
         }
 
-        if(film.getMpas() != null) {
+        if (film.getMpas() != null) {
             List<Mpa> mpas = List.copyOf(film.getMpas());
             long nullIdMpas = mpas.stream().filter(mpa -> mpa.getId() == null).count();
-            if (nullIdMpas > 0 ) {
+            if (nullIdMpas > 0) {
                 throw new NotFoundException("id рейтинга не указан");
             }
             film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
