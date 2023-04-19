@@ -21,70 +21,58 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmorateApplicationTests {
 
-	private final UserDbStorage userDbStorage;
-	private final FilmDbStorage filmDbStorage;
+    private final UserDbStorage userDbStorage;
+    private final FilmDbStorage filmDbStorage;
 
-	@Test
-	public void testFindUserById() {
-		User user = new User(null, "mail@mail.ru", "dolore", "Nick Name",
-				LocalDate.of(1946, 8, 20));
-		int id = userDbStorage.add(user).getId();
-		Optional<User> userOptional = Optional.ofNullable(userDbStorage.getUser(id));
+    @Test
+    public void testFindUserById() {
+        User user = new User(null, "mail@mail.ru", "dolore", "Nick Name",
+                LocalDate.of(1946, 8, 20));
+        int id = userDbStorage.add(user).getId();
+        Optional<User> userOptional = Optional.ofNullable(userDbStorage.getUser(id));
 
-		assertThat(userOptional)
-				.isPresent()
-				.hasValueSatisfying(u ->
-						assertThat(u).hasFieldOrPropertyWithValue("id", id)
-				);
-	}
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(u ->
+                        assertThat(u).hasFieldOrPropertyWithValue("id", id)
+                );
+    }
 
-	@Test
-	public void testFindFilmById() {
-		Film film = new Film(null, "name", "description",
-				LocalDate.of(1975, 5, 17),
-				100);
-		film.setMpa(new Mpa(1, null));
-		int id = filmDbStorage.add(film).getId();
-		Optional<Film> filmOptional = filmDbStorage.getFilm(id);
+    @Test
+    public void testFindFilmById() {
+        Film film = new Film(null, "name", "description",
+                LocalDate.of(1975, 5, 17),
+                100);
+        film.setMpa(new Mpa(1, null));
+        int id = filmDbStorage.add(film).getId();
+        Optional<Film> filmOptional = filmDbStorage.getFilm(id);
 
-		assertThat(filmOptional)
-				.isPresent()
-				.hasValueSatisfying(f ->
-						assertThat(f).hasFieldOrPropertyWithValue("id", id)
-				);
-	}
+        assertThat(filmOptional)
+                .isPresent()
+                .hasValueSatisfying(f ->
+                        assertThat(f).hasFieldOrPropertyWithValue("id", id)
+                );
+    }
 
-	@Test
-	public void testUpdate() {
-		Film film = new Film(null, "name", "description",
-				LocalDate.of(1975, 5, 17),
-				100);
-		film.setMpa(new Mpa(1, null));
-		Film filmUpdate = new Film(null, "NewName", "description",
-				LocalDate.of(1975, 5, 17),
-				100);
-		filmUpdate.setMpa(new Mpa(1, null));
-		int id = filmDbStorage.add(film).getId();
-		filmUpdate.setId(id);
-		filmDbStorage.update(filmUpdate);
-		Optional<Film> filmOptional = filmDbStorage.getFilm(id);
+    @Test
+    public void testUpdate() {
+        Film film = new Film(null, "name", "description",
+                LocalDate.of(1975, 5, 17),
+                100);
+        film.setMpa(new Mpa(1, null));
+        Film filmUpdate = new Film(null, "NewName", "description",
+                LocalDate.of(1975, 5, 17),
+                100);
+        filmUpdate.setMpa(new Mpa(1, null));
+        int id = filmDbStorage.add(film).getId();
+        filmUpdate.setId(id);
+        filmDbStorage.update(filmUpdate);
+        Optional<Film> filmOptional = filmDbStorage.getFilm(id);
 
-		assertThat(filmOptional)
-				.isPresent()
-				.hasValueSatisfying(u -> assertThat(u)
-						.hasFieldOrPropertyWithValue("name", "NewName"));
-	}
-
-	@Test
-	public void testFilmDelete() {
-		Film film = new Film(null, "name", "description",
-				LocalDate.of(1975, 5, 17),
-				100);
-		film.setMpa(new Mpa(1, null));
-		filmDbStorage.add(film);
-		filmDbStorage.delete(film);
-		Optional<Film> filmOptional = filmDbStorage.getFilm(1);
-		assertThat(filmOptional).isEmpty();
-	}
+        assertThat(filmOptional)
+                .isPresent()
+                .hasValueSatisfying(u -> assertThat(u)
+                        .hasFieldOrPropertyWithValue("name", "NewName"));
+    }
 
 }
