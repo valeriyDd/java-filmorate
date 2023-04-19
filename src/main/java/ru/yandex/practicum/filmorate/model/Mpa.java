@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class mpa {
+public class MPA {
     private int id;
     private String name;
 }
