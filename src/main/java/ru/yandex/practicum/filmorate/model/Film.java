@@ -29,6 +29,6 @@ public class Film {
     @NotNull
     private Integer duration;
     private Integer rating;
-    private MPA mpa;
+    private Mpa mpa;
     private List<Genres> genres;
 }

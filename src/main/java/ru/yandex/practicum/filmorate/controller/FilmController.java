@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genres;
-import ru.yandex.practicum.filmorate.model.MPA;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
@@ -44,12 +44,12 @@ public class FilmController {
     }
 
     @GetMapping("/mpa")
-    public List<MPA> getMPAs() {
+    public List<Mpa> getMPAs() {
         return mpaStorage.getMPAs();
     }
 
     @GetMapping("/mpa/{id}")
-    public MPA getMpa(@PathVariable int id) {
+    public Mpa getMpa(@PathVariable int id) {
         return mpaStorage.getMpaById(id);
     }
 
