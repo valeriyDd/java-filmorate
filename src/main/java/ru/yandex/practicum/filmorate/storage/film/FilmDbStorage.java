@@ -53,32 +53,9 @@ public class FilmDbStorage implements FilmStorage {
                     ps.setInt(1, genres.get(i).getId());
                     ps.setInt(2, film.getId());
                 }
-
                 @Override
                 public int getBatchSize() {
                     return genres.size();
-                }
-            });
-        }
-
-        if (film.getMpas() != null) {
-            List<Mpa> mpas = List.copyOf(film.getMpas());
-            long nullIdMpas = mpas.stream().filter(mpa -> mpa.getId() == null).count();
-            if (nullIdMpas > 0) {
-                throw new NotFoundException("id рейтинга не указан");
-            }
-            film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).intValue());
-            String sqlToFilmGenre = "INSERT INTO FILM_GENRES (genre_id, film_id) VALUES(?, ?)";
-            jdbcTemplate.batchUpdate(sqlToFilmGenre, new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setInt(1, mpas.get(i).getId());
-                    ps.setInt(2, film.getId());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return mpas.size();
                 }
             });
         }
