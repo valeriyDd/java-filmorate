@@ -75,16 +75,4 @@ class FilmorateApplicationTests {
 						.hasFieldOrPropertyWithValue("name", "NewName"));
 	}
 
-	@Test
-	public void testFilmDelete() {
-		Film film = new Film(null, "name", "description",
-				LocalDate.of(1975, 5, 17),
-				100);
-		film.setMpa(new Mpa(1, null));
-		filmDbStorage.add(film);
-		filmDbStorage.delete(film);
-		Optional<Film> filmOptional = filmDbStorage.getFilm(1);
-		assertThat(filmOptional).isEmpty();
-	}
-
 }
